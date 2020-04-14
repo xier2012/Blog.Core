@@ -42,8 +42,14 @@ namespace Blog.Core.Model.Models
                 SeedDataFolder = Path.Combine(WebRootPath, SeedDataFolder);
                 SeedDataFolderMini = Path.Combine(WebRootPath, SeedDataFolderMini);
 
+                Console.WriteLine("************ Blog.Core *****************");
+                Console.WriteLine($"Current authorization scheme: " + (Permissions.IsUseIds4 ? "Ids4" : "JWT"));
+                Console.WriteLine();
+
                 Console.WriteLine("Config data init...");
                 Console.WriteLine($"Is multi-DataBase: {Appsettings.app(new string[] { "MutiDBEnabled" })}");
+                Console.WriteLine($"Is CQRS: {Appsettings.app(new string[] { "CQRSEnabled" })}");
+                Console.WriteLine();
                 if (Appsettings.app(new string[] { "MutiDBEnabled" }).ObjToBool())
                 {
                     Console.WriteLine($"Master DB Type: {MyContext.DbType}");
@@ -51,7 +57,23 @@ namespace Blog.Core.Model.Models
                     Console.WriteLine();
 
                     var slaveIndex = 0;
-                    BaseDBConfig.MutiConnectionString.Where(x => x.ConnId != MainDb.CurrentDbConnId).ToList().ForEach(m =>
+                    BaseDBConfig.MutiConnectionString.Item1.Where(x => x.ConnId != MainDb.CurrentDbConnId).ToList().ForEach(m =>
+                    {
+                        slaveIndex++;
+                        Console.WriteLine($"Slave{slaveIndex} DB ID: {m.ConnId}");
+                        Console.WriteLine($"Slave{slaveIndex} DB Type: {m.DbType}");
+                        Console.WriteLine($"Slave{slaveIndex} DB ConnectString: {m.Conn}");
+                    });
+
+                }
+                else if (Appsettings.app(new string[] { "CQRSEnabled" }).ObjToBool())
+                {
+                    Console.WriteLine($"Master DB Type: {MyContext.DbType}");
+                    Console.WriteLine($"Master DB ConnectString: {MyContext.ConnectionString}");
+                    Console.WriteLine();
+
+                    var slaveIndex = 0;
+                    BaseDBConfig.MutiConnectionString.Item2.Where(x => x.ConnId != MainDb.CurrentDbConnId).ToList().ForEach(m =>
                     {
                         slaveIndex++;
                         Console.WriteLine($"Slave{slaveIndex} DB ID: {m.ConnId}");
@@ -66,6 +88,7 @@ namespace Blog.Core.Model.Models
                     Console.WriteLine("DB ConnectString: " + MyContext.ConnectionString);
                 }
 
+                Console.WriteLine();
                 Console.WriteLine("Create Database...");
                 // 创建数据库
                 myContext.Db.DbMaintenance.CreateDatabase();
@@ -86,6 +109,7 @@ namespace Blog.Core.Model.Models
                     typeof(sysUserInfo),
                     typeof(Topic),
                     typeof(TopicDetail),
+                    typeof(TasksQz),
                     typeof(UserRole));
 
                 // 后期单独处理某些表
@@ -211,6 +235,19 @@ namespace Blog.Core.Model.Models
                     else
                     {
                         Console.WriteLine("Table:sysUserInfo already exists...");
+                    }
+                    #endregion
+
+
+                    #region TasksQz
+                    if (!await myContext.Db.Queryable<TasksQz>().AnyAsync())
+                    {
+                        myContext.GetEntityDB<TasksQz>().InsertRange(JsonHelper.ParseFormByJson<List<TasksQz>>(FileHelper.ReadFile(string.Format(SeedDataFolder, "TasksQz"), Encoding.UTF8)));
+                        Console.WriteLine("Table:TasksQz created success!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Table:TasksQz already exists...");
                     }
                     #endregion
 

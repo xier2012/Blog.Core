@@ -36,6 +36,11 @@
             </summary>
             <param name="invocation">包含被拦截方法的信息</param>
         </member>
+        <member name="T:Blog.Core.AOP.BlogUserAuditAOP">
+            <summary>
+            面向切面的缓存使用
+            </summary>
+        </member>
         <member name="M:Blog.Core.AOP.CacheAOPbase.Intercept(Castle.DynamicProxy.IInvocation)">
             <summary>
             AOP的拦截方法
@@ -301,18 +306,6 @@
             apache jemeter 压力测试
             更新接口
             </summary>
-            <returns></returns>
-        </member>
-        <member name="T:Blog.Core.Controllers.ClaimsController">
-            <summary>
-            这是一个测试的控制器，主要为了测试基于Claim的验证机制
-            </summary>
-        </member>
-        <member name="M:Blog.Core.Controllers.ClaimsController.BatchDelete(System.String)">
-            <summary>
-            测试批量删除，如果是axios，记得要把数组格式化成 stringQuery
-            </summary>
-            <param name="ids"></param>
             <returns></returns>
         </member>
         <member name="M:Blog.Core.Controllers.DbFirstController.#ctor(Blog.Core.Model.Models.MyContext)">
@@ -597,6 +590,49 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:Blog.Core.Controllers.TasksQzController.Get(System.Int32,System.String)">
+            <summary>
+            分页获取
+            </summary>
+            <param name="page"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Controllers.TasksQzController.Post(Blog.Core.Model.Models.TasksQz)">
+            <summary>
+            添加计划任务
+            </summary>
+            <param name="tasksQz"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Controllers.TasksQzController.Put(Blog.Core.Model.Models.TasksQz)">
+            <summary>
+            修改计划任务
+            </summary>
+            <param name="tasksQz"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Controllers.TasksQzController.StartJob(System.Int32)">
+            <summary>
+            启动计划任务
+            </summary>
+            <param name="jobId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Controllers.TasksQzController.StopJob(System.Int32)">
+            <summary>
+            停止一个计划任务
+            </summary>
+            <param name="jobId"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Blog.Core.Controllers.TasksQzController.ReCovery(System.Guid)">
+            <summary>
+            重启一个计划任务
+            </summary>
+            <param name="jobId"></param>
+            <returns></returns>
+        </member>
         <member name="T:Blog.Core.Controllers.TopicController">
             <summary>
             类别管理【无权限】
@@ -858,6 +894,11 @@
             Db 启动服务
             </summary>
         </member>
+        <member name="T:Blog.Core.Extensions.Authorization_Ids4Setup">
+            <summary>
+            权限 启动服务
+            </summary>
+        </member>
         <member name="T:Blog.Core.Extensions.AutoMapperSetup">
             <summary>
             Automapper 启动服务
@@ -876,6 +917,11 @@
         <member name="T:Blog.Core.Extensions.HttpContextSetup">
             <summary>
             Db 启动服务
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Extensions.IpPolicyRateLimitSetup">
+            <summary>
+            Cors 启动服务
             </summary>
         </member>
         <member name="T:Blog.Core.Extensions.JobSetup">
@@ -901,6 +947,11 @@
         <member name="T:Blog.Core.Extensions.SwaggerSetup">
             <summary>
             Swagger 启动服务
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Extensions.AllServicesMildd">
+            <summary>
+            Cors 启动服务
             </summary>
         </member>
         <member name="T:Blog.Core.Filter.GlobalRouteAuthorizeConvention">

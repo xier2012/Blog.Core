@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -143,8 +146,27 @@ namespace Blog.Core.Extensions
                  o.TokenValidationParameters = tokenValidationParameters;
                  o.Events = new JwtBearerEvents
                  {
+                     OnChallenge = context =>
+                     {
+                         context.Response.Headers.Add("Token-Error", context.ErrorDescription);
+                         return Task.CompletedTask;
+                     },
                      OnAuthenticationFailed = context =>
                      {
+                         var token= context.Request.Headers["Authorization"].ObjToString().Replace("Bearer ", "");
+                         var jwtToken = (new JwtSecurityTokenHandler()).ReadJwtToken(token);
+
+                         if (jwtToken.Issuer != Issuer)
+                         {
+                             context.Response.Headers.Add("Token-Error-Iss", "issuer is wrong!");
+                         }
+
+                         if (jwtToken.Audiences.FirstOrDefault() != Audience)
+                         {
+                             context.Response.Headers.Add("Token-Error-Aud", "Audience is wrong!");
+                         }
+
+
                          // 如果过期，则把<是否过期>添加到，返回头信息中
                          if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                          {
@@ -157,17 +179,8 @@ namespace Blog.Core.Extensions
              .AddScheme<AuthenticationSchemeOptions, ApiResponseHandler>(nameof(ApiResponseHandler), o => { });
 
 
-            //2.2【认证】、IdentityServer4 认证 (暂时忽略)
-            //services.AddAuthentication("Bearer")
-            //  .AddIdentityServerAuthentication(options =>
-            //  {
-            //      options.Authority = "http://localhost:5002";
-            //      options.RequireHttpsMetadata = false;
-            //      options.ApiName = "blog.core.api";
-            //  });
-
-
-
+            // 这里冗余写了一次,因为很多人看不到
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // 注入权限处理器
             services.AddScoped<IAuthorizationHandler, PermissionHandler>();
             services.AddSingleton(permissionRequirement);
