@@ -1,7 +1,6 @@
 ﻿using Blog.Core.Common.Helper;
 using Blog.Core.IServices;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,17 +23,17 @@ namespace Blog.Core.Tasks
             Console.WriteLine("Job 1 is starting.");
 
             _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                TimeSpan.FromSeconds(60*60));//一个小时
+                TimeSpan.FromSeconds(60 * 60));//一个小时
 
             return Task.CompletedTask;
         }
 
-        private async void DoWork(object state)
+        private void DoWork(object state)
         {
             try
             {
-                var model = await _blogArticleServices.GetBlogDetails(1);
-                Console.WriteLine($"BlogArticle:{model?.btitle}");
+                var model = _blogArticleServices.GetBlogDetails(1).Result;
+                Console.WriteLine($"Job 1 启动成功，获取id=1的博客title为:{model?.btitle}");
             }
             catch (Exception ex)
             {

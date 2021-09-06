@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Blog.Core.Common.Helper
 {
     public static class ConsoleHelper
     {
-        static void WriteColorLine(string str, ConsoleColor color)
+        public static void WriteColorLine(string str, ConsoleColor color)
         {
             ConsoleColor currentForeColor = Console.ForegroundColor;
             Console.ForegroundColor = color;
